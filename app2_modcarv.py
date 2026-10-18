@@ -436,7 +436,7 @@ elif choix == "🩸 D3 — Suivi glycémique":
         Cela pourrait refléter un effet de **régression vers la moyenne** : les patients avec des glycémies initialement très élevées ont été pris en charge, ramenant leurs valeurs vers la moyenne de la cohorte lors des mesures suivantes.
         """)
 
-    st.markdown("---")
+       st.markdown("---")
     st.header("5. Vue individuelle (pseudonymisée)")
     st.warning("⚠️ Accès réservé au personnel médical habilité")
     st.info("Cette vue affiche la **glycémie moyenne** d'un patient donné, calculée sur l'ensemble de ses prélèvements. Le filtre par **profil de risque du ménage** permet de concentrer l'analyse sur les patients des ménages à risque élevé.")
@@ -460,8 +460,14 @@ elif choix == "🩸 D3 — Suivi glycémique":
                     fig = px.line(sub, x="date_mesure", y="glycemie", markers=True, title=f"Trajectoire glycémique du patient {p}")
                     fig.add_hline(y=1.26, line_dash="dash", line_color="red", annotation_text="Seuil hyperglycémie (1.26 g/L)")
                     st.plotly_chart(fig, use_container_width=True)
-                        st.markdown("---")
+
+    st.markdown("---")
     st.caption("**Note :** Toutes les mesures de glycémie présentées ci-dessus sont des glycémies à jeun.")
+
+# ============================================================
+# PAGE RECHERCHE MÉNAGE
+# ============================================================
+elif choix == "🔍 Recherche ménage":
 
 # ============================================================
 # PAGE RECHERCHE MÉNAGE
