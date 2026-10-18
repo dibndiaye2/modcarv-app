@@ -122,27 +122,44 @@ if choix == "🏠 Accueil":
     st.markdown("---")
     st.markdown("### 📖 Dictionnaire des sigles et variables")
     
+        # On crée les listes séparément pour éviter les pertes au copier-coller
+    liste_sigles = [
+        "ATCD", 
+        "HTA", 
+        "IMC", 
+        "GPAQ", 
+        "SF-36", 
+        "ICC", 
+        "Prélèvements", 
+        "Rattachements", 
+        "pct_hta", 
+        "pct_diabete", 
+        "pct_surpoids"
+    ]
+    
+    liste_significations = [
+        "Antécédent (ex: ATCD familial = antécédent dans la famille)",
+        "Hypertension Artérielle",
+        "Indice de Masse Corporelle",
+        "Global Physical Activity Questionnaire (activité physique)",
+        "Questionnaire de qualité de vie (36 questions)",
+        "Coefficient de Corrélation Intra-Classe",
+        "460 : Nombre total de prélèvements collectés",
+        "453 : Prélèvements liés à un patient après nettoyage",
+        "Prévalence de HTA mesurée dans la zone (%)",
+        "Prévalence du Diabète connu dans la zone (%)",
+        "Prévalence du Surpoids ou de Obésité dans la zone (%)"
+    ]
+
+    # On assemble le tableau
     dico_data = pd.DataFrame({
-        "Sigle / Terme": [
-            "ATCD", "HTA", "IMC", "GPAQ", "SF-36", "ICC", 
-            "Prélèvements", "Rattachements", 
-            "pct_hta", "pct_diabete", "pct_surpoids"
-        ],
-        "Signification": [
-            "Antécédent (ex: ATCD familial = antécédent dans la famille)",
-            "Hypertension Artérielle",
-            "Indice de Masse Corporelle",
-            "Global Physical Activity Questionnaire (activité physique)",
-            "Questionnaire de qualité de vie (36 questions)",
-            "Coefficient de Corrélation Intra-Classe",
-            "460 : Nombre total de prélèvements collectés",
-            "453 : Prélèvements liés à un patient après nettoyage",
-            "Prévalence de HTA mesurée dans la zone (%)",
-            "Prévalence du Diabète connu dans la zone (%)",
-            "Prévalence du Surpoids ou de Obésité dans la zone (%)"
-        ]
+        "Sigle / Terme": liste_sigles,
+        "Signification": liste_significations
     })
+    
+    # On affiche
     st.dataframe(dico_data, use_container_width=True, hide_index=True)
+  
       
 # ============================================================
 # PAGE D1 — COLLECTE
