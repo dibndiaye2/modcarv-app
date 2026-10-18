@@ -125,7 +125,7 @@ if choix == "🏠 Accueil":
             "Coefficient de Corrélation Intra-Classe",
             "460 : Nombre total de prélèvements collectés",
             "453 : Prélèvements liés à un patient après nettoyage"
-            Prévalence de HTA mesurée dans la zone (%)",
+           " Prévalence de HTA mesurée dans la zone (%)",
             "Prévalence du Diabète connu dans la zone (%)",
             "Prévalence du Surpoids ou de l'Obésité dans la zone (%)"
         ]
