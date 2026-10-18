@@ -83,40 +83,6 @@ st.sidebar.caption("Dib NDIAYE — Master SID UADB")
 # ============================================================
 # PAGE ACCUEIL
 # ============================================================
-if choix == "🏠 Accueil":
-    st.title("📊 Tableaux de bord MODCARV")
-    st.markdown("*Projet MODCARV — Saint-Louis, Sénégal*")
-    st.markdown("---")
-
-    st.markdown("""
-    ### Bienvenue
-    Ce dispositif comprend **trois tableaux de bord** et des modules complémentaires :
-    """)
-    
-    st.table(pd.DataFrame({
-        "Dashboard": ["📊 D1 — Collecte", "🌍 D2 — Épidémiologie", "🩸 D3 — Glycémie"],
-        "Utilisateurs": ["Superviseurs terrain", "Coordination médicale", "Médecin référent"],
-        "Objectif": ["Suivi de la collecte", "Prévalences + résultats", "Suivi patients"]
-    }))
-
-    st.markdown("---")
-    st.subheader("Chiffres clés")
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("👥 Patients", f"{len(patient)}")
-    c2.metric("🏠 Ménages", f"{len(menage)}")
-    c3.metric("🧪 Prélèvements", "460")
-    c4.metric("✅ Rattachements", "453")
-
-    st.markdown("---")
-    st.markdown("### 🎯 Que pouvez-vous faire avec cet outil ?")
-    st.markdown("En plus des tableaux de bord, cette application met à votre disposition **deux fonctionnalités complémentaires** :")
-    st.markdown("**🔍 Recherche par ménage** : Consultez rapidement le profil de risque cardiovasculaire d'un ménage donné.")
-    st.markdown("**📝 Formulaire d'évaluation** : Donnez votre avis à la fin de l'exploration de l'outil.")
-
-    st.markdown("---")
-    st.markdown("### 📖 Dictionnaire des sigles et variables")
-    
-    # Le dictionnaire (bien aligné avec 4 espaces)
     dico_data = pd.DataFrame({
         "Sigle / Terme": [
             "ATCD", "HTA", "IMC", "GPAQ", "SF-36", "ICC", 
@@ -138,7 +104,6 @@ if choix == "🏠 Accueil":
         ]
     })
     st.dataframe(dico_data, use_container_width=True, hide_index=True)
-
 # ============================================================
 # PAGE D1 — COLLECTE
 # ============================================================
