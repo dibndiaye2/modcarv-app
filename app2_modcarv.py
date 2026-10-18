@@ -80,6 +80,9 @@ st.sidebar.caption("Dib NDIAYE — Master SID UADB")
 # ============================================================
 # PAGE ACCUEIL
 # ============================================================
+# ============================================================
+# PAGE ACCUEIL
+# ============================================================
 if choix == "🏠 Accueil":
     st.title("📊 Tableaux de bord MODCARV")
     st.markdown("*Projet MODCARV — Saint-Louis, Sénégal*")
@@ -101,8 +104,8 @@ if choix == "🏠 Accueil":
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("👥 Patients", f"{len(patient)}")
     c2.metric("🏠 Ménages", f"{len(menage)}")
-    c3.metric("🧪 Prélèvements", "460") # Total collecté
-    c4.metric("✅ Rattachements", "453") # Total rattaché
+    c3.metric("🧪 Prélèvements", "460")
+    c4.metric("✅ Rattachements", "453")
 
     st.markdown("---")
     st.markdown("### 🎯 Que pouvez-vous faire avec cet outil ?")
@@ -111,9 +114,10 @@ if choix == "🏠 Accueil":
     st.markdown("**📝 Formulaire d'évaluation** : Donnez votre avis à la fin de l'exploration de l'outil.")
 
     st.markdown("---")
-    st.markdown("### 📖 Dictionnaire des sigles")
+    st.markdown("### 📖 Dictionnaire des sigles et variables")
     
-        dico_data = pd.DataFrame({
+    # Le dictionnaire (bien aligné avec 4 espaces)
+    dico_data = pd.DataFrame({
         "Sigle / Terme": [
             "ATCD", "HTA", "IMC", "GPAQ", "SF-36", "ICC", 
             "Prélèvements", "Rattachements", 
