@@ -86,6 +86,9 @@ st.sidebar.caption("Dib NDIAYE — Master SID UADB")
     # ============================================================
 # PAGE ACCUEIL
 # ============================================================
+# ============================================================
+# PAGE ACCUEIL
+# ============================================================
 if choix == "🏠 Accueil":
     st.title("📊 Tableaux de bord MODCARV")
     st.markdown("*Projet MODCARV — Saint-Louis, Sénégal*")
@@ -119,8 +122,7 @@ if choix == "🏠 Accueil":
     st.markdown("---")
     st.markdown("### 📖 Dictionnaire des sigles et variables")
     
-    # Le dictionnaire (bien aligné avec 4 espaces)
-        dico_data = pd.DataFrame({
+    dico_data = pd.DataFrame({
         "Sigle / Terme": [
             "ATCD", "HTA", "IMC", "GPAQ", "SF-36", "ICC", 
             "Prélèvements", "Rattachements", 
@@ -140,7 +142,7 @@ if choix == "🏠 Accueil":
             "Prévalence du Surpoids ou de Obésité dans la zone (%)"
         ]
     })
-    st.dataframe(dico_data, use_container_width=True, hide_index=True)"
+    st.dataframe(dico_data, use_container_width=True, hide_index=True)
       
 # ============================================================
 # PAGE D1 — COLLECTE
