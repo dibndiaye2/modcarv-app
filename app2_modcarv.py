@@ -114,7 +114,8 @@ if choix == "🏠 Accueil":
     st.markdown("### 📖 Dictionnaire des sigles")
     
     dico_data = pd.DataFrame({
-        "Sigle / Terme": ["ATCD", "HTA", "IMC", "GPAQ", "SF-36", "ICC", "Prélèvements", "Rattachements", "pct_hta", "pct_diabete", "pct_surpoids"],
+        "Sigle / Terme": ["ATCD", "HTA", "IMC", "GPAQ", "SF-36", "ICC", "Prélèvements", "Rattachements", "pct_hta", "pct_diabete", "pct_surpoids"
+                         ],
         "Signification": [
             "Antécédent (ex: ATCD familial = antécédent dans la famille)",
             "Hypertension Artérielle",
