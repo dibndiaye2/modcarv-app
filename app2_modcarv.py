@@ -113,9 +113,12 @@ if choix == "🏠 Accueil":
     st.markdown("---")
     st.markdown("### 📖 Dictionnaire des sigles")
     
-    dico_data = pd.DataFrame({
-        "Sigle / Terme": ["ATCD", "HTA", "IMC", "GPAQ", "SF-36", "ICC", "Prélèvements", "Rattachements", "pct_hta", "pct_diabete", "pct_surpoids"
-                         ],
+        dico_data = pd.DataFrame({
+        "Sigle / Terme": [
+            "ATCD", "HTA", "IMC", "GPAQ", "SF-36", "ICC", 
+            "Prélèvements", "Rattachements", 
+            "pct_hta", "pct_diabete", "pct_surpoids"
+        ],
         "Signification": [
             "Antécédent (ex: ATCD familial = antécédent dans la famille)",
             "Hypertension Artérielle",
@@ -124,10 +127,10 @@ if choix == "🏠 Accueil":
             "Questionnaire de qualité de vie (36 questions)",
             "Coefficient de Corrélation Intra-Classe",
             "460 : Nombre total de prélèvements collectés",
-            "453 : Prélèvements liés à un patient après nettoyage"
+            "453 : Prélèvements liés à un patient après nettoyage",
             "Prévalence de HTA mesurée dans la zone (%)",
             "Prévalence du Diabète connu dans la zone (%)",
-            "Prévalence du Surpoids ou de l'Obésité dans la zone (%)"
+            "Prévalence du Surpoids ou de Obésité dans la zone (%)"
         ]
     })
     st.dataframe(dico_data, use_container_width=True, hide_index=True)
