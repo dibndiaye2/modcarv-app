@@ -121,6 +121,7 @@ if choix == "🏠 Accueil":
 # ============================================================
 elif choix == "📊 D1 — Suivi de la collecte":
     st.title("📊 Dashboard D1 — Suivi de la collecte")
+    st.markdown("*Projet MODCARV — Saint-Louis, Sénégal*")
     st.markdown("---")
 
     st.header("1. Indicateurs clés")
@@ -128,7 +129,7 @@ elif choix == "📊 D1 — Suivi de la collecte":
     c1.metric("👥 Patients", f"{len(patient)}")
     c2.metric("🏠 Ménages", f"{len(menage)}")
     c3.metric("🧪 Prélèvements", f"{len(mesure)}")
-    c4.metric("✅ Rattachements", "453") # Valeur fixe ou à calculer si colonne dispo
+    c4.metric("✅ Rattachements", "453")
 
     st.markdown("---")
     st.header("2. Avancement par zone")
@@ -141,11 +142,10 @@ elif choix == "📊 D1 — Suivi de la collecte":
 
     st.markdown("---")
     st.header("3. Taux de complétude")
-    st.info("Les données manquantes (N/A) correspondent aux patients non prélevés ou aux variables non renseignées sur le terrain.")
     variables = ["age_calculee", "Sexe", "IMC", "hypertension", "hta_connue",
                  "diabete_connu", "gpaq_inactif", "sf_PCS", "sf_MCS", "af_hta"]
     variables = [v for v in variables if v in patient.columns]
-    cplt = [{"Variable": v, "Complétude (%)": round(patient[v].notna().sum() / len(patient) * 100, 1)} for v in variables]
+    cplt = [{"Variable": v, "Valides": int(patient[v].notna().sum()), "Total": len(patient), "Complétude (%)": round(patient[v].notna().sum() / len(patient) * 100, 1)} for v in variables]
     st.dataframe(pd.DataFrame(cplt), use_container_width=True, hide_index=True)
 
     st.markdown("---")
@@ -156,9 +156,17 @@ elif choix == "📊 D1 — Suivi de la collecte":
     n_imc = int(patient["IMC"].isna().sum()) if "IMC" in patient.columns else 0
     ca.info(f"**{n_age} patients sans âge** — enfants < 18 ans exclus")
     cb.info(f"**{n_imc} patients sans IMC** — mêmes enfants exclus")
+    
+    st.subheader("⚠️ Points de vigilance")
+    st.warning("**7 prélèvements non rattachés** — patients non enrôlés ou codes ambigus")
+    st.warning("**103 patients non prélevés** — sans échantillon biologique (non éligibles ou refus), ce qui est normal et documenté")
+    
+    st.subheader("📌 Informations")
+    n_hta = int(patient["hypertension"].sum()) if "hypertension" in patient.columns else 0
+    st.info(f"**{n_hta} cas d'HTA mesurée** dans la population")
 
 # ============================================================
-# PAGE D2 — ÉPIDÉMIOLOGIE (ENRICHIE)
+# PAGE D2 — ÉPIDÉMIOLOGIE (COMPLET)
 # ============================================================
 elif choix == "🌍 D2 — Épidémiologie descriptive":
     st.title("🌍 Dashboard D2 — Épidémiologie descriptive")
@@ -170,10 +178,22 @@ elif choix == "🌍 D2 — Épidémiologie descriptive":
     c1.metric("🩺 HTA mesurée", f"{n}", f"{n/len(patient)*100:.1f} %")
     n = int(patient["diabete_connu"].sum()) if "diabete_connu" in patient.columns else 0
     c2.metric("🩸 Diabète connu", f"{n}", f"{n/len(patient)*100:.1f} %")
+    if "hyperglycemie" in patient.columns:
+        nv = int(patient["hyperglycemie"].notna().sum())
+        n = int(patient["hyperglycemie"].sum())
+        c3.metric("📊 Hyperglycémie", f"{n}", f"{n/nv*100:.1f} %" if nv > 0 else "—")
     n = int(patient["surpoids_ou_obesite"].sum()) if "surpoids_ou_obesite" in patient.columns else 0
-    c3.metric("⚖️ Surpoids/Obésité", f"{n}", f"{n/len(patient)*100:.1f} %")
+    c4.metric("⚖️ Surpoids/Obésité", f"{n}", f"{n/len(patient)*100:.1f} %")
+
+    c5, c6, c7, c8 = st.columns(4)
+    n = int(patient["hta_connue"].sum()) if "hta_connue" in patient.columns else 0
+    c5.metric("📋 HTA connue", f"{n}", f"{n/len(patient)*100:.1f} %")
+    n = int(patient["fumeur_actuel"].sum()) if "fumeur_actuel" in patient.columns else 0
+    c6.metric("🚬 Fumeurs", f"{n}", f"{n/len(patient)*100:.1f} %")
     n = int(patient["gpaq_inactif"].sum()) if "gpaq_inactif" in patient.columns else 0
-    c4.metric("🛋️ Inactifs", f"{n}", f"{n/len(patient)*100:.1f} %")
+    c7.metric("🛋️ Inactifs", f"{n}", f"{n/len(patient)*100:.1f} %")
+    n = int(patient["obesite"].sum()) if "obesite" in patient.columns else 0
+    c8.metric("⚖️ Obésité", f"{n}", f"{n/len(patient)*100:.1f} %")
 
     st.markdown("---")
     st.header("2. Signes d'appel et antécédents familiaux")
@@ -181,12 +201,37 @@ elif choix == "🌍 D2 — Épidémiologie descriptive":
     if "a_signes_appel" in patient.columns:
         n = int(patient["a_signes_appel"].sum())
         c1.metric("🩺 Au moins 1 signe", f"{n}", f"{n/len(patient)*100:.1f} %")
+    if "a_fatigue_chronique" in patient.columns:
+        n = int(patient["a_fatigue_chronique"].sum())
+        c2.metric("😴 Fatigue chronique", f"{n}", f"{n/len(patient)*100:.1f} %")
+    if "a_troubles_visuels" in patient.columns:
+        n = int(patient["a_troubles_visuels"].sum())
+        c3.metric("👁️ Troubles visuels", f"{n}", f"{n/len(patient)*100:.1f} %")
+    if "a_polyurie" in patient.columns:
+        n = int(patient["a_polyurie"].sum())
+        c4.metric("💧 Polyurie", f"{n}", f"{n/len(patient)*100:.1f} %")
+
+    c5, c6, c7, c8 = st.columns(4)
     if "af_hta" in patient.columns:
         n = int(patient["af_hta"].sum())
-        c2.metric("🧬 ATCD fam. HTA", f"{n}", f"{n/len(patient)*100:.1f} %")
+        c5.metric("🧬 ATCD fam. HTA", f"{n}", f"{n/len(patient)*100:.1f} %")
     if "af_diabete" in patient.columns:
         n = int(patient["af_diabete"].sum())
-        c3.metric("🧬 ATCD fam. Diabète", f"{n}", f"{n/len(patient)*100:.1f} %")
+        c6.metric("🧬 ATCD fam. Diabète", f"{n}", f"{n/len(patient)*100:.1f} %")
+    if "af_obesite" in patient.columns:
+        n = int(patient["af_obesite"].sum())
+        c7.metric("🧬 ATCD fam. Obésité", f"{n}", f"{n/len(patient)*100:.1f} %")
+    if "a_traitement_en_cours" in patient.columns:
+        n = int(patient["a_traitement_en_cours"].sum())
+        c8.metric("💊 Traitement en cours", f"{n}", f"{n/len(patient)*100:.1f} %")
+
+    if "nb_signes_appel" in patient.columns:
+        st.markdown("**Distribution du nombre de signes d'appel :**")
+        vc = patient["nb_signes_appel"].value_counts().sort_index().reset_index()
+        vc.columns = ["Nb signes", "Patients"]
+        fig = px.bar(vc, x="Nb signes", y="Patients", color="Patients", color_continuous_scale="Reds")
+        fig.update_layout(height=300, showlegend=False)
+        st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("---")
     st.header("3. Répartition démographique")
@@ -214,10 +259,11 @@ elif choix == "🌍 D2 — Épidémiologie descriptive":
             pct_surpoids=("surpoids_ou_obesite", lambda x: x.mean() * 100 if x.notna().any() else 0)
         ).round(1).reset_index()
         st.dataframe(prev, use_container_width=True, hide_index=True)
-        
+
         fig = px.bar(prev, x="zone_nom", y=["pct_hta", "pct_diabete", "pct_surpoids"], barmode="group",
                      color_discrete_sequence=["#d62728", "#ff7f0e", "#2ca02c"],
                      labels={"zone_nom": "Zone géographique", "value": "Prévalence (%)", "variable": "Indicateur"})
+        fig.update_layout(height=400)
         st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("---")
@@ -229,27 +275,34 @@ elif choix == "🌍 D2 — Épidémiologie descriptive":
         pc["Profil"] = pd.Categorical(pc["Profil"], categories=ordre, ordered=True)
         pc = pc.sort_values("Profil")
 
-        fig = px.bar(pc, x="Profil", y="Nb", color="Profil",
-                    color_discrete_map={"Faible risque": "#2ca02c", "Risque modere": "#ff7f0e", "Risque eleve": "#d62728"},
-                    title="Distribution des profils de risque")
-        fig.update_layout(showlegend=False, height=300)
-        st.plotly_chart(fig, use_container_width=True)
-        
+        ca, cb = st.columns([1, 2])
+        with ca:
+            st.dataframe(pc, use_container_width=True, hide_index=True)
+        with cb:
+            fig = px.bar(pc, x="Profil", y="Nb", color="Profil",
+                        color_discrete_map={"Faible risque": "#2ca02c", "Risque modere": "#ff7f0e", "Risque eleve": "#d62728"})
+            fig.update_layout(showlegend=False, height=300)
+            st.plotly_chart(fig, use_container_width=True)
+
         st.info("""
         **ℹ️ Note sur le calcul du score de risque**
-        Le score de risque de chaque ménage est calculé comme la **moyenne des z-scores** de sept variables (sédentarité, environnement, hyperglycémie, diabète, SF-36 PCS, SF-36 MCS, antécédents familiaux).
-        Les 103 ménages sont classés en **3 terciles** : 🟢 Faible risque, 🟠 Risque modéré, 🔴 Risque élevé.
-        Ce score permet de classer les ménages pour prioriser les interventions. Ce n'est **pas une probabilité** de survenue d'un événement.
+        Le score de risque de chaque ménage est calculé comme la **moyenne des z-scores** de sept variables (sédentarité, environnement, hyperglycémie, diabète, SF-36 PCS, SF-36 MCS, antécédents familiaux), extraites des modèles multiniveaux nuls.
+        Les 103 ménages sont classés en **3 terciles** : 🟢 Faible risque (1er tercile), 🟠 Risque modéré (2e tercile), 🔴 Risque élevé (3e tercile).
+        Ce score permet de classer les ménages pour prioriser les interventions. Ce n'est **pas une probabilité** de survenue d'un événement cardiovasculaire.
         """)
 
     st.markdown("---")
     st.header("6. Principaux résultats statistiques")
+    st.markdown("*Synthèse des résultats d'analyse du risque cardiovasculaire*")
+    
     st.subheader("6.1 Top 11 des facteurs à forte composante ménage (H1)")
     icc_top = pd.DataFrame({
         'Facteur': ['Traitement en cours', 'Au moins 1 signe d\'appel', 'Environnement', 'Sédentarité', 'Hyperglycémie', 'Nb signes d\'appel', 'ATCD familial diabète', 'ATCD familial obésité', 'Inactif (GPAQ)', 'Diabète connu', 'Nb types ATCD'],
         'ICC': [0.686, 0.517, 0.498, 0.489, 0.429, 0.342, 0.274, 0.255, 0.230, 0.219, 0.210]
     }).sort_values('ICC', ascending=True)
-    fig = px.bar(icc_top, x='ICC', y='Facteur', orientation='h', color='ICC', color_continuous_scale='Reds', title='ICC des 11 facteurs à composante ménage forte')
+
+    fig = px.bar(icc_top, x='ICC', y='Facteur', orientation='h', color='ICC', color_continuous_scale='Reds', title='ICC des 11 facteurs à composante ménage forte (ICC > 0,20)')
+    fig.update_layout(height=450, showlegend=False)
     fig.add_vline(x=0.20, line_dash='dash', line_color='red')
     st.plotly_chart(fig, use_container_width=True)
 
@@ -259,19 +312,26 @@ elif choix == "🌍 D2 — Épidémiologie descriptive":
         'Réduction (%)': [62.7, 31.4, 5.2],
         'Interprétation': ['Composition (génétique)', 'Mixte', 'Contexte pur']
     })
-    st.dataframe(h2_data, use_container_width=True, hide_index=True)
+    ca, cb = st.columns([1, 1])
+    with ca:
+        st.dataframe(h2_data, use_container_width=True, hide_index=True)
+    with cb:
+        fig = px.bar(h2_data, x='Facteur', y='Réduction (%)', color='Interprétation',
+                     color_discrete_map={'Composition (génétique)': '#d62728', 'Mixte': '#ff7f0e', 'Contexte pur': '#2ca02c'})
+        fig.update_layout(height=300)
+        st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("6.3 Découverte H4 — Conscience du risque")
     st.info("""
     **L'ATCD familial est un marqueur de CONSCIENCE du risque, pas de prédisposition biologique.**
-    - ATCD HTA → HTA connue : **p = 0,0014** ✅
-    - ATCD HTA → HTA mesurée : **p = 1,00** ❌
+    - ATCD HTA → HTA connue : **p = 0,0014** ✅ (prédit le diagnostic)
+    - ATCD HTA → HTA mesurée : **p = 1,00** ❌ (ne prédit pas la prévalence réelle)
     - Sous-diagnostic : 58,2 % (sans ATCD) vs 41,6 % (avec ATCD)
-    **Recommandation :** cibler les campagnes sur les personnes SANS ATCD familial connu.
+    **Recommandation :** cibler les campagnes de sensibilisation sur les personnes SANS ATCD familial connu.
     """)
 
 # ============================================================
-# PAGE D3 — GLYCÉMIE (ENRICHIE)
+# PAGE D3 — GLYCÉMIE (COMPLET)
 # ============================================================
 elif choix == "🩸 D3 — Suivi glycémique":
     st.title("🩸 Dashboard D3 — Suivi glycémique")
@@ -291,28 +351,52 @@ elif choix == "🩸 D3 — Suivi glycémique":
     st.header("2. Distribution par fenêtre")
     st.info("**Fenêtres de collecte :** F1 (juin-juillet 2025) • F2 (déc. 2025-fév. 2026) • F3 (mars-avril 2026)")
     if "fenetre" in mesure.columns and "glycemie" in mesure.columns:
-        fig = px.box(mesure.dropna(subset=["glycemie"]), x="fenetre", y="glycemie", color="fenetre")
+        fig = px.box(mesure.dropna(subset=["glycemie"]), x="fenetre", y="glycemie", color="fenetre",
+                     color_discrete_sequence=["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"])
+        fig.update_layout(showlegend=False, height=400)
         st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("---")
-    st.header("3. Distribution par rang")
-    st.info("Le **rang** correspond à l'ordre chronologique de la mesure pour un même patient.")
+    st.header("3. Hyperglycémie par fenêtre")
+    if "fenetre" in mesure.columns and "glycemie" in mesure.columns:
+        m = mesure.dropna(subset=["glycemie"]).copy()
+        m["hyper"] = (m["glycemie"] >= 1.26).astype(int)
+        hf = m.groupby("fenetre").agg(n=("hyper", "count"), n_hyper=("hyper", "sum"), pct=("hyper", lambda x: x.mean() * 100)).round(1).reset_index()
+        st.dataframe(hf, use_container_width=True, hide_index=True)
+
+    st.markdown("---")
+    st.header("4. Distribution par rang")
+    st.info("Le **rang** correspond à l'ordre chronologique de la mesure pour un même patient : Rang 1 (première mesure), Rang 2 (deuxième mesure), etc.")
     if "rang" in mesure.columns and "glycemie" in mesure.columns:
         fig = px.box(mesure.dropna(subset=["glycemie"]), x="rang", y="glycemie")
+        fig.update_layout(height=400)
         st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("---")
-    st.header("4. Vue individuelle (pseudonymisée)")
+    st.header("5. Vue individuelle (pseudonymisée)")
     st.warning("⚠️ Accès réservé au personnel médical habilité")
-    st.info("Cette vue affiche la glycémie moyenne d'un patient, calculée sur l'ensemble de ses prélèvements.")
-    
-    if "code_patient_norm" in mesure.columns:
-        liste = sorted(mesure["code_patient_norm"].dropna().unique())
+    st.info("Cette vue affiche la **glycémie moyenne** d'un patient donné, calculée sur l'ensemble de ses prélèvements. Le filtre par **profil de risque du ménage** permet de concentrer l'analyse sur les patients des ménages à risque élevé.")
+
+    if "profil_risque" in mesure.columns:
+        st.markdown("**Filtrer par profil de risque du ménage :**")
+        profil_filtre = st.selectbox("Profil", ["Tous", "Faible risque", "Risque modere", "Risque eleve"])
+        mesure_filtree = mesure[mesure["profil_risque"] == profil_filtre] if profil_filtre != "Tous" else mesure
+    else:
+        mesure_filtree = mesure
+
+    if "code_patient_norm" in mesure_filtree.columns:
+        liste = sorted(mesure_filtree["code_patient_norm"].dropna().unique())
         if len(liste) > 0:
             p = st.selectbox("Choisir un patient :", liste)
             if p:
-                sub = mesure[mesure["code_patient_norm"] == p].sort_values("date_mesure")
-                st.dataframe(sub[["date_mesure", "rang", "glycemie", "fenetre"]], use_container_width=True, hide_index=True)
+                sub = mesure_filtree[mesure_filtree["code_patient_norm"] == p].sort_values("date_mesure")
+                st.dataframe(sub[["date_mesure", "rang", "glycemie", "duree_jeune_h", "fenetre"]], use_container_width=True, hide_index=True)
+                
+                # Optionnel : Graphique de la trajectoire du patient
+                if len(sub) > 1:
+                    fig = px.line(sub, x="date_mesure", y="glycemie", markers=True, title=f"Trajectoire glycémique du patient {p}")
+                    fig.add_hline(y=1.26, line_dash="dash", line_color="red", annotation_text="Seuil hyperglycémie (1.26 g/L)")
+                    st.plotly_chart(fig, use_container_width=True)
 
 # ============================================================
 # PAGE RECHERCHE MÉNAGE
@@ -343,15 +427,20 @@ elif choix == "🔍 Recherche ménage":
             st.markdown(f"""
             <div style="background-color: {couleur}; padding: 20px; border-radius: 10px; text-align: center; color: white;">
                 <h2>{emoji} Profil : {profil}</h2>
+                <p>Ce ménage présente un risque cardiovasculaire {profil.lower()}.</p>
             </div>
             """, unsafe_allow_html=True)
             
-            c1, c2, c3 = st.columns(3)
-            c1.metric("Score", f"{m.get('score_menage', 0):.3f}")
+            st.markdown("### 📊 Informations du ménage")
+            c1, c2, c3, c4 = st.columns(4)
+            c1.metric("Score de risque", f"{m.get('score_menage', 0):.3f}")
             c2.metric("Patients", int(m.get('nb_patients', 0)))
             c3.metric("Commune", str(m.get('Commune', 'Saint-Louis')))
+            c4.metric("Zone", str(m.get('zone_nom', m.get('zone', 'N/A'))))
             
-            st.info("Le score de risque est calculé à partir des 7 variables (sédentarité, environnement, hyperglycémie, diabète, SF-36, ATCD).")
+            st.info("""
+            **ℹ️ Note : le score de risque** est calculé à partir de sept variables (sédentarité, environnement, hyperglycémie, diabète, SF-36 PCS, SF-36 MCS, antécédents familiaux), selon la méthode décrite au chapitre 4 du mémoire.
+            """)
         else:
             st.error("Ménage non trouvé.")
 
@@ -364,8 +453,12 @@ elif choix == "📝 Évaluation":
     st.markdown("""
     ### Votre avis compte !
     Ce questionnaire a pour objectif d'évaluer votre satisfaction et l'utilisabilité 
-    des tableaux de bord MODCARV.
+    des tableaux de bord MODCARV (Collecte, Épidémiologie, Glycémie, Recherche ménage).
+    
+    Vos retours nous aideront à améliorer l'outil pour mieux répondre à vos besoins 
+    sur le terrain. Le temps de réponse est estimé à **2 minutes**.
     """)
+    
     st.markdown("""
     <div style="text-align: center; margin-top: 40px;">
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSfM2ReK2Gf25TSMhwtXiSymBc9yoNgC3pGHhFmpchq89KutmQ/viewform" 
@@ -376,3 +469,5 @@ elif choix == "📝 Évaluation":
         </a>
     </div>
     """, unsafe_allow_html=True)
+    
+    st.info("💡 Le questionnaire s'ouvrira dans un nouvel onglet de votre navigateur.")
